@@ -6,6 +6,7 @@ import api from '../../api';
 import { SearchResultItem } from '../../api/search';
 
 interface Props {
+	/** When a fandom is selected from the list */
 	onSelect: (alias: string) => void;
 }
 
@@ -15,6 +16,7 @@ interface State {
 	phrase?: string;
 }
 
+/** handles searching for fandoms by name */
 export class Search extends React.Component<Props, State> {
 	state: State = {};
 
@@ -25,8 +27,8 @@ export class Search extends React.Component<Props, State> {
 
 	// handles when selecting a search result
 	onSelectResult = (alias: string): void => {
-		// hide the search results
-		this.clearSearch();
+		// // hide the search results
+		// this.clearSearch();
 
 		// share the selected result
 		this.props.onSelect(alias);
