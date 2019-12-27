@@ -1,61 +1,46 @@
-import * as React from "react";
-import { render } from "react-dom";
-import { CreateFandom } from "./views/create-fandom";
+import * as React from 'react';
 import api from './api';
-import { GetSummaryResult } from './api/get-summary';
 
-import "./styles/index.scss";
+import { render } from 'react-dom';
+import { CreateFandom } from './views/create-fandom';
+import { Search } from './components/search';
+
+import './styles/index.scss';
 
 interface State {
-  loading?: boolean;
-  result?: GetSummaryResult;
+	loading?: boolean;
 }
 
-class App extends React.Component<{ }, State> {
+class App extends React.Component<{}, State> {
+	state: State = {
+		loading: true
+	};
 
-  state: State = {
-    loading: true,
-  }
+	async componentDidMount() {
+		await api.init();
+	}
 
-  async componentDidMount() {
-    await api.init();
+	onSearch = async () => {
+		await api.search('exo');
+	};
 
-    const result = await api.getSummary();
-    this.setState({ result });
-    
-    console.log(result);
-  }
+	render() {
+		const { loading } = this.state;
 
-  onSearch = async () => {
-    await api.search('exo');
-  }
+		return (
+			<div className="App">
+				{loading && <div>Loading</div>}
 
-  render() {
-    const { loading, result } = this.state;
+				<Search onSelect={(alias: string) => console.log('sel', alias)} />
 
-    return (
-      <div className="App">
-        { loading && <div>Loading</div> }
-
-        { result && <div>
-          { result.top.map(item => <div>
-            {item.name}
-          </div> )}
-        </div> }
-
-        <button onClick={this.onSearch} >Search test</button>
-
-        <CreateFandom />
-      </div>
-    );
-  }
-
+				<CreateFandom />
+			</div>
+		);
+	}
 }
 
-
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 render(<App />, rootElement);
-
 
 //<LoginView />
 //import { LoginView } from "./views/login";
