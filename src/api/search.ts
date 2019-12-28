@@ -1,16 +1,21 @@
 import _ from 'lodash';
 import { CFanApi } from '.';
-import { ApiResult } from './types';
 
 export interface SearchResultItem {
 	name: string;
 	alias: string;
 }
 
-export interface SearchResult extends ApiResult {
+type Fail = {
+	success: false;
+};
+
+type Success = {
+	success: true;
 	matches: SearchResultItem[];
-	total: number;
-}
+};
+
+type SearchResult = Fail | Success;
 
 export async function search(
 	this: CFanApi,
@@ -23,28 +28,37 @@ export async function search(
 		.map(phrase => phrase.toLowerCase())
 		.value();
 
-	// perform the database query -- each record should
-	// contain a key that's a lower case array of the
-	// saved name
-	const snapshot = await this.app
-		.firestore()
-		.collection('fandoms')
-		.where('key', 'array-contains-any', phrases)
-		.get();
+	try {
+		// perform the database query -- each record should
+		// contain a key that's a lower case array of the
+		// saved name
+		const snapshot = await this.app
+			.firestore()
+			.collection('fandoms')
+			.where('key', 'array-contains-any', phrases)
+			.get();
 
-	// convert the firestore document into a search result
-	const matches: SearchResultItem[] = _.map(snapshot.docs, doc => {
-		const data = doc.data();
+		// check if anything was found
+		if (snapshot.size === 0) {
+			return { success: false };
+		}
+
+		// convert the firestore document into a search result
+		const matches: SearchResultItem[] = _.map(snapshot.docs, doc => {
+			const data = doc.data();
+			return {
+				name: data.name as string,
+				alias: data.alias as string
+			};
+		});
+
+		// give back the matches found
 		return {
-			name: data.name as string,
-			alias: data.alias as string
+			success: true,
+			matches
 		};
-	});
-
-	// give back the matches found
-	return {
-		success: true,
-		total: _.size(matches),
-		matches
-	};
+	} catch (ex) {
+		// nothing was found
+		return { success: false };
+	}
 }

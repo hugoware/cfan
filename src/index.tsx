@@ -4,6 +4,7 @@ import api from './api';
 import { render } from 'react-dom';
 import { CreateFandom } from './views/create-fandom';
 import { Search } from './components/search';
+import { Login } from './components/login';
 
 import './styles/index.scss';
 
@@ -24,6 +25,11 @@ class App extends React.Component<{}, State> {
 		await api.search('exo');
 	};
 
+	onTryLogin = () => {
+		console.log('try login');
+		api.logInUsingGoogle();
+	};
+
 	render() {
 		const { loading } = this.state;
 
@@ -31,7 +37,7 @@ class App extends React.Component<{}, State> {
 			<div className="App">
 				{loading && <div>Loading</div>}
 
-				<Search onSelect={(alias: string) => console.log('sel', alias)} />
+				<Login />
 
 				<CreateFandom />
 			</div>

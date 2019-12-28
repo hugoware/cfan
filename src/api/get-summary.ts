@@ -1,35 +1,52 @@
 import * as _ from 'lodash';
 import { CFanApi } from '.';
-import { ApiResult } from './types';
 
-export interface FandomSummary {
+interface FandomSummary {
+	alias: string;
 	name: string;
 }
 
-export interface GetSummaryResult extends ApiResult {
+type Fail = {
+	success: false;
+};
+
+type Success = {
+	success: true;
 	top: FandomSummary[];
-	head: FandomSummary;
+	ahead: FandomSummary[];
 	member: FandomSummary[];
-	tail: FandomSummary;
-}
+	tail: FandomSummary[];
+};
+
+type GetSummaryResult = Fail | Success;
 
 export async function getSummary(this: CFanApi): Promise<GetSummaryResult> {
-	const result = await this.app
-		.firestore()
-		.collection('fandoms')
-		.get();
+	try {
+		const result = await this.app
+			.firestore()
+			.collection('fandoms')
+			.get();
 
-	const records: FandomSummary[] = [];
-	result.forEach(item => {
-		const record = Object.assign({}, item.data());
-		records.push(record as FandomSummary);
-	});
+		//  nothing was found
+		if (result.size === 0) {
+			return { success: false };
+		}
 
-	return {
-		success: true,
-		top: _.take(records, 3),
-		head: _.first(records),
-		tail: _.last(records),
-		member: records
-	};
+		// map the results
+		const records = _.map(result.docs, doc => {
+			const data = doc.data();
+			return Object.assign({}, data) as FandomSummary;
+		});
+
+		return {
+			success: true,
+			top: _.take(records, 3),
+			ahead: _.take(records, 2),
+			tail: _.take(records, 2),
+			member: records
+		};
+	} catch (ex) {
+		// appeared to be an error
+		return { success: false };
+	}
 }

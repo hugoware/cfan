@@ -1,8 +1,10 @@
-import { init } from './init';
-import { sendBoost } from './send-boost';
-import { getSummary } from './get-summary';
-import { search } from './search';
 import { createFandom } from './create-fandom';
+import { findFandom } from './find-fandom';
+import { getSummary } from './get-summary';
+import { init } from './init';
+import { search } from './search';
+import { sendBoost } from './send-boost';
+import { getUser, isLoggedIn, logInUsingEmail, logInUsingGoogle } from './user';
 
 export class CFanApi {
 	/** internal app access */
@@ -14,6 +16,11 @@ export class CFanApi {
 	getSummary = getSummary;
 	search = search;
 	createFandom = createFandom;
+	findFandom = findFandom;
+	logInUsingGoogle = logInUsingGoogle;
+	logInUsingEmail = logInUsingEmail;
+	isLoggedIn = isLoggedIn;
+	getUser = getUser;
 }
 
 // singleton instance

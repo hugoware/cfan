@@ -21,7 +21,7 @@ export class Search extends React.Component<Props, State> {
 	state: State = {};
 
 	// handles user input and queues up the next search
-	onInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
+	onSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
 		this.requestSearch(event.target.value);
 	};
 
@@ -119,24 +119,23 @@ export class Search extends React.Component<Props, State> {
 			'has-phrase': hasPhrase
 		});
 
-		const subview =
-			// is actively searching
-			isBusy
-				? this.renderSearching
-				: // searched but found nothing
-				hasPhrase && !hasResults
-				? this.renderNothingFound
-				: // searched and has results
-				hasPhrase && hasResults
-				? this.renderResults
-				: // nothing to show (default)
-				  _.noop;
+		// check if actively searching
+		const subview = isBusy
+			? this.renderSearching
+			: // searched but found nothing
+			hasPhrase && !hasResults
+			? this.renderNothingFound
+			: // searched and has results
+			hasPhrase && hasResults
+			? this.renderResults
+			: // nothing to show (default)
+			  _.noop;
 
 		// return the view
 		return (
 			<div className={searchCx}>
 				<div className="busy" />
-				<input onChange={this.onInput} />
+				<input onChange={this.onSearchChange} />
 				{subview()}
 			</div>
 		);
