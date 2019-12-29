@@ -4,11 +4,18 @@ import { getSummary } from './get-summary';
 import { init } from './init';
 import { search } from './search';
 import { sendBoost } from './send-boost';
-import { getUser, isLoggedIn, logInUsingEmail, logInUsingGoogle } from './user';
+import {
+	getUser,
+	setUser,
+	isLoggedIn,
+	logInUsingEmail,
+	logInUsingGoogle
+} from './user';
 
 export class CFanApi {
 	/** internal app access */
 	protected app: firebase.app.App;
+	protected user?: firebase.User;
 
 	// public methods
 	init = init;
@@ -21,6 +28,7 @@ export class CFanApi {
 	logInUsingEmail = logInUsingEmail;
 	isLoggedIn = isLoggedIn;
 	getUser = getUser;
+	setUser = setUser;
 }
 
 // singleton instance

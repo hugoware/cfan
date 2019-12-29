@@ -1,14 +1,16 @@
 import { CFanApi } from '.';
 import firebase from 'firebase';
 
-export async function init(app: firebase.app.App) {
-	app.auth().onAuthStateChanged(state => {
-		console.log('state', state);
+export async function init(api: CFanApi, app: firebase.app.App) {
+	app.auth().onAuthStateChanged((user: firebase.User) => {
+		api.setUser(user);
+		console.log('user logged in');
 	});
-
-	// const result = await app.auth().getRedirectResult();
-	// console.log(result);
 }
+
+type Fail = { success: false };
+type Success = { success: true };
+type LoginResult = Fail | Success;
 
 /** checks if the user is already logged in */
 export function isLoggedIn(this: CFanApi) {}
@@ -25,12 +27,23 @@ export async function logInUsingEmail(
 	this: CFanApi,
 	email: string,
 	password: string
-) {
-	const result = await this.app
-		.auth()
-		.signInWithEmailAndPassword(email, password);
+): Promise<LoginResult> {
+	try {
+		const result = await this.app
+			.auth()
+			.signInWithEmailAndPassword(email, password);
 
-	console.log(result);
+		return { success: true };
+	} catch (ex) {
+		console.log(`login failed: ${ex.toString()}`);
+		return { success: false };
+	}
 }
 
-export function getUser(this: CFanApi) {}
+export function getUser(this: CFanApi): firebase.User {
+	return this.user;
+}
+
+export function setUser(this: CFanApi, user: firebase.User | null): void {
+	this.user = user;
+}

@@ -1,52 +1,50 @@
 import * as React from 'react';
-import api from './api';
-
 import { render } from 'react-dom';
-import { CreateFandom } from './views/create-fandom';
-import { Search } from './components/search';
-import { Login } from './components/login';
+import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom';
+
+import { HomeView } from './views/home';
+import { LoginView } from './views/login';
+import { InitializeView } from './views/initialize';
+
+import api from './api';
+import { init as initNav } from './navigation';
 
 import './styles/index.scss';
 
 interface State {
-	loading?: boolean;
+	busy?: boolean;
 }
 
 class App extends React.Component<{}, State> {
 	state: State = {
-		loading: true
+		busy: true
 	};
 
 	async componentDidMount() {
 		await api.init();
 	}
 
-	onSearch = async () => {
-		await api.search('exo');
-	};
-
-	onTryLogin = () => {
-		console.log('try login');
-		api.logInUsingGoogle();
-	};
-
 	render() {
-		const { loading } = this.state;
+		const { busy } = this.state;
 
 		return (
 			<div className="App">
-				{loading && <div>Loading</div>}
+				<Router>
+					<Preload />
 
-				<Login />
-
-				<CreateFandom />
+					<Route path="/home" component={HomeView} />
+					<Route path="/login" component={LoginView} />
+					<Route exact path="/" component={InitializeView} />
+				</Router>
 			</div>
 		);
 	}
 }
 
+const Preload = withRouter((props: any, state: any) => {
+	initNav(props.history);
+	return null;
+});
+
 const rootElement = document.getElementById('root');
 render(<App />, rootElement);
-
-//<LoginView />
-//import { LoginView } from "./views/login";

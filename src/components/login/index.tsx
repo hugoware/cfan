@@ -1,88 +1,58 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 import api from '../../api';
 
-interface Props {}
-
-interface State {
-	email?: string;
-	password?: string;
-	error?: 'missing_email' | 'missing_password' | 'login_failed';
-	busy?: boolean;
+interface Props {
+	onLogin: () => void;
 }
 
-export class Login extends React.Component<Props, State> {
-	state: State = {};
-
-	// called each time the email field changes
-	onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>): void => {
-		const email = event.target.value;
-		this.setState({ email });
+export class Login extends React.Component<Props> {
+	state = {
+		email: '',
+		password: '',
+		error: ''
 	};
 
-	// called each time the password field changes
-	onChangePassword = (event: React.ChangeEvent<HTMLInputElement>): void => {
-		const password = event.target.value;
-		this.setState({ password });
+	onEmailChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			email: event.target.value
+		});
 	};
 
-	// attemps to log into the app
-	onLogin = async () => {
-		const email = _.trim(this.state.email);
-		const password = _.trim(this.state.password);
-
-		// no email provided
-		if (!email) {
-			return this.setState({ error: 'missing_email' });
-		}
-
-		// no password provided
-		if (!password) {
-			return this.setState({ error: 'missing_password' });
-		}
-
-		// attempt the login
-		this.setState({ busy: true });
-
-		// attempt the login
-		try {
-			const result = await api.logInUsingEmail(email, password);
-			console.log(result);
-		} catch (ex) {
-			this.setState({ error: 'login_failed' });
-		} finally {
-			// always clear the busy
-			this.setState({ busy: false });
-		}
+	onPasswordChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({
+			password: event.target.value
+		});
 	};
 
-	renderError() {
-		const { error } = this.state;
+	onLoginClicked = async () => {
+		const email = this.state.email;
+		const password = this.state.password;
+		const result = await api.logInUsingEmail(email, password);
 
-		return error === 'login_failed' ? (
-			<div>Login failed</div>
-		) : error === 'missing_email' ? (
-			<div>Email required</div>
-		) : error === 'missing_password' ? (
-			<div>Missing password</div>
-		) : null;
-	}
+		if (result.success) {
+			this.props.onLogin();
+		} else {
+			this.setState({ error: 'Your password failed' });
+		}
+	};
 
 	render() {
 		return (
 			<div className="login">
-				{this.renderError()}
-				<label>
-					<span>email</span>
-					<input type="text" onChange={this.onChangeEmail} />
-				</label>
-
-				<label>
-					<span>password</span>
-					<input type="password" onChange={this.onChangePassword} />
-				</label>
-
-				<button onClick={this.onLogin}>Login</button>
+				<div>
+					{this.state.error && <div>{this.state.error} </div>}
+					<div className="container">
+						<span>Email: </span>
+						<input type="text" onChange={this.onEmailChanged} />
+					</div>
+					<div className="container">
+						<span>Password: </span>
+						<input type="password" onChange={this.onPasswordChanged} />
+					</div>
+					<div className="container">
+						<input type="submit" value="login" onClick={this.onLoginClicked} />
+					</div>
+				</div>
 			</div>
 		);
 	}
