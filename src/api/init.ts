@@ -30,7 +30,7 @@ export async function init(this: CFanApi): Promise<InitResult> {
 	}
 
 	// prepare the login
-	initLogin(this.app);
+	initLogin(this, this.app);
 
 	return { success: true };
 }

@@ -11,7 +11,7 @@ export function sanitizeName(str: string): string {
  * ex: Black Pink --> ["black", "pink"]
  */
 export function createKey(str: string): string[] {
-	return sanitizeName(str).split(/ +/g);
+	return _.toLower(sanitizeName(str)).split(/ +/g);
 }
 
 /** creates an ID alias for a name

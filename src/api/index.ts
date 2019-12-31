@@ -7,10 +7,15 @@ import { sendBoost } from './send-boost';
 import {
 	getUser,
 	setUser,
-	isLoggedIn,
+	isUserLoggedIn,
 	logInUsingEmail,
-	logInUsingGoogle
+	logInUsingGoogle,
+	addUserStateChangeListener,
+	removeUserStateChangeListener,
+	User
 } from './user';
+
+export { User } from './user';
 
 export class CFanApi {
 	/** internal app access */
@@ -26,9 +31,11 @@ export class CFanApi {
 	findFandom = findFandom;
 	logInUsingGoogle = logInUsingGoogle;
 	logInUsingEmail = logInUsingEmail;
-	isLoggedIn = isLoggedIn;
+	isUserLoggedIn = isUserLoggedIn;
 	getUser = getUser;
 	setUser = setUser;
+	addUserStateChangeListener = addUserStateChangeListener;
+	removeUserStateChangeListener = removeUserStateChangeListener;
 }
 
 // singleton instance

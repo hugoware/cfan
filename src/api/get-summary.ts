@@ -1,9 +1,18 @@
 import * as _ from 'lodash';
 import { CFanApi } from '.';
 
-interface FandomSummary {
+export interface FandomSummary {
 	alias: string;
 	name: string;
+	heroImageUrl: string;
+	profileImageUrl: string;
+	color: string;
+	score: number;
+	style: string;
+}
+
+export interface MemberFandomSummary extends FandomSummary {
+	timeRemaining: number;
 }
 
 type Fail = {

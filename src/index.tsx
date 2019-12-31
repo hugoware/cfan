@@ -5,9 +5,11 @@ import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom';
 import { HomeView } from './views/home';
 import { LoginView } from './views/login';
 import { InitializeView } from './views/initialize';
+import { CreateFandomView } from './views/create-fandom';
+import { ShowFandomView } from './views/show-fandom';
 
 import api from './api';
-import { init as initNav } from './navigation';
+import nav, { init as initNav } from './navigation';
 
 import './styles/index.scss';
 
@@ -20,7 +22,15 @@ class App extends React.Component<{}, State> {
 		busy: true
 	};
 
+	// handle when a user disconnects
+	onUserStateChange = () => {
+		const target = api.isUserLoggedIn() ? 'home' : 'login';
+		nav.go(`/${target}`);
+	};
+
+	// setup the view
 	async componentDidMount() {
+		api.addUserStateChangeListener(this.onUserStateChange);
 		await api.init();
 	}
 
@@ -32,6 +42,8 @@ class App extends React.Component<{}, State> {
 				<Router>
 					<Preload />
 
+					<Route path="/fandom/show/:key" component={ShowFandomView} />
+					<Route path="/fandom/create" component={CreateFandomView} />
 					<Route path="/home" component={HomeView} />
 					<Route path="/login" component={LoginView} />
 					<Route exact path="/" component={InitializeView} />
