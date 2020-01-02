@@ -2,6 +2,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom';
 
+import { Frame } from './components/frame';
 import { HomeView } from './views/home';
 import { LoginView } from './views/login';
 import { InitializeView } from './views/initialize';
@@ -24,8 +25,7 @@ class App extends React.Component<{}, State> {
 
 	// handle when a user disconnects
 	onUserStateChange = () => {
-		const target = api.isUserLoggedIn() ? 'home' : 'login';
-		nav.go(`/${target}`);
+		(api.isUserLoggedIn() ? nav.goToHome : nav.goToLogin)();
 	};
 
 	// setup the view
@@ -39,23 +39,25 @@ class App extends React.Component<{}, State> {
 
 		return (
 			<div className="App">
-				<Router>
-					<Preload />
-
-					<Route path="/fandom/show/:key" component={ShowFandomView} />
-					<Route path="/fandom/create" component={CreateFandomView} />
-					<Route path="/home" component={HomeView} />
-					<Route path="/login" component={LoginView} />
-					<Route exact path="/" component={InitializeView} />
-				</Router>
+				<Frame>
+					<Router>
+						<Navigation>
+							<Route path="/fandom/show/:id" component={ShowFandomView} />
+							<Route path="/fandom/create" component={CreateFandomView} />
+							<Route path="/home" component={HomeView} />
+							<Route path="/login" component={LoginView} />
+							<Route exact path="/" component={InitializeView} />
+						</Navigation>
+					</Router>
+				</Frame>
 			</div>
 		);
 	}
 }
 
-const Preload = withRouter((props: any, state: any) => {
+const Navigation = withRouter((props: any, state: any) => {
 	initNav(props.history);
-	return null;
+	return props.children;
 });
 
 const rootElement = document.getElementById('root');

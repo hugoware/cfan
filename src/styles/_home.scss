@@ -5,60 +5,63 @@
 	
 	.fandom-list {
 
-		.fandom {
-			position: relative;
-			height: 75px;
-			line-height: 75px;
-
-			.detail {
-				display: flex;
-				z-index: 1;
-				position: relative;
-			}
-
-			img {
-				height: 75px;
-			}
-
-			&.dark {
-				color: black;
-			}
-
-			&.light {
-				color: white;
-			}
-
-			.title {
-				font-size: 21px;
-			}
-
-			.score {
-
-			}
-
-			.time {
-
-			}
-
-			.hero {
-				max-height: 100px;
-				mix-blend-mode: multiply;
-				filter: grayscale(100%);
-				z-index: 0;
-
-				opacity: 0.3;
-				background-size: cover;
-				background-repeat: no-repeat;
-				background-position: 100% 50%;
-				position: absolute;
-				right: 0;
-				left: 0;
-				top: 0;
-				bottom: 0;
-			}
-
-		}
+		
 
 	}
 
 }
+
+
+// .fandom {
+		// 	position: relative;
+		// 	height: 75px;
+		// 	line-height: 75px;
+
+		// 	.detail {
+		// 		display: flex;
+		// 		z-index: 1;
+		// 		position: relative;
+		// 	}
+
+		// 	img {
+		// 		height: 75px;
+		// 	}
+
+		// 	&.dark {
+		// 		color: black;
+		// 	}
+
+		// 	&.light {
+		// 		color: white;
+		// 	}
+
+		// 	.title {
+		// 		font-size: 21px;
+		// 	}
+
+		// 	.score {
+
+		// 	}
+
+		// 	.time {
+
+		// 	}
+
+		// 	.hero {
+		// 		max-height: 100px;
+		// 		mix-blend-mode: multiply;
+		// 		filter: grayscale(100%);
+		// 		z-index: 0;
+
+		// 		opacity: 0.3;
+		// 		background-size: cover;
+		// 		background-repeat: no-repeat;
+		// 		background-position: 100% 50%;
+		// 		position: absolute;
+		// 		right: 0;
+		// 		left: 0;
+		// 		top: 0;
+		// 		bottom: 0;
+		// 	}
+
+		// }

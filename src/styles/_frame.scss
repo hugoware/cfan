@@ -1,0 +1,27 @@
+
+$header-height: 40px;
+$header-margin: 12px;
+
+.frame {
+	background: $default-background;
+}
+
+.header {
+	position: fixed;
+	height: $header-height;
+	z-index: $layer-header;
+	display: flex;
+	left: 0;
+	right: 0;
+	top: 0;
+
+	background: $theme-color;
+	background: $theme-gradient;
+}
+
+.content {
+	position: absolute;
+	top: $header-height + $header-margin;
+	left: 0;
+	right: 0;
+}

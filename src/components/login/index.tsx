@@ -36,6 +36,11 @@ export class Login extends React.Component<Props> {
 		}
 	};
 
+	onGoogleLoginClicked = async () => {
+		const result = await api.logInUsingGoogle();
+		console.log(result);
+	};
+
 	render() {
 		return (
 			<div className="login">
@@ -51,6 +56,12 @@ export class Login extends React.Component<Props> {
 					</div>
 					<div className="container">
 						<input type="submit" value="login" onClick={this.onLoginClicked} />
+					</div>
+
+					<div className="container">
+						<button onClick={this.onGoogleLoginClicked}>
+							Log in with Google
+						</button>
 					</div>
 				</div>
 			</div>

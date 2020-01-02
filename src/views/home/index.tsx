@@ -2,8 +2,8 @@ import _ from 'lodash';
 import * as React from 'react';
 import api from '../../api';
 import nav from '../../navigation';
-import cx from 'classnames';
-import { FandomSummary } from '../../api/get-summary';
+import { Fandom } from './fandom';
+import { FandomSummary } from '../../api';
 
 interface Props {}
 
@@ -20,10 +20,8 @@ export class HomeView extends React.Component<Props, State> {
 		nav.go('/fandom/create');
 	};
 
-	async componentDidMount() {
-		this.setState({ busy: true });
-
-		// try and load the summary
+	// loads summary data
+	updateSummary = async () => {
 		const summary = await api.getSummary();
 		if (!summary.success) {
 			return this.setState({ error: 'server_error' });
@@ -31,6 +29,11 @@ export class HomeView extends React.Component<Props, State> {
 
 		// set the fandoms to show
 		this.setState({ fandoms: summary.member });
+	};
+
+	async componentDidMount() {
+		this.setState({ busy: true });
+		this.updateSummary();
 	}
 
 	// shows an error message
@@ -38,29 +41,9 @@ export class HomeView extends React.Component<Props, State> {
 
 	// displays a list of all relevant fandoms
 	renderFandoms(fandoms: FandomSummary[]) {
-		const items = _.map(fandoms, fandom => {
-			const fandomCx = cx('fandom', fandom.style);
-
-			return (
-				<div
-					className={fandomCx}
-					key={`fandom_${fandom.alias}`}
-					style={{ backgroundColor: fandom.color }}
-				>
-					{fandom.heroImageUrl && (
-						<div
-							style={{ backgroundImage: `url(${fandom.heroImageUrl})` }}
-							className="hero"
-						/>
-					)}
-					<div className="detail">
-						<img src={fandom.profileImageUrl} alt={fandom.alias} />
-						<div className="title">{fandom.name}</div>
-					</div>
-				</div>
-			);
-		});
-
+		const items = _.map(fandoms, fandom => (
+			<Fandom key={fandom.alias} fandom={fandom} />
+		));
 		return <div className="fandom-list">{items}</div>;
 	}
 
@@ -71,7 +54,10 @@ export class HomeView extends React.Component<Props, State> {
 				{error && this.renderError()}
 				{!error && fandoms && this.renderFandoms(fandoms)}
 
+				<hr />
+				<hr />
 				<button onClick={this.onCreateFandom}>Create Fandom</button>
+				<button onClick={() => api.logOut()}>Log Out</button>
 			</div>
 		);
 	}

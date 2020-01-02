@@ -1,10 +1,6 @@
 import { CFanApi } from '.';
 import firebase from 'firebase';
 
-type Fail = { success: false };
-type Success = { success: true };
-type LoginResult = Fail | Success;
-
 /** public user information */
 export type User = {
 	id: string;
@@ -17,7 +13,12 @@ let userStateChangeListeners: (() => void)[] = [];
 
 /** prepares login handling */
 export async function init(api: CFanApi, app: firebase.app.App) {
-	app.auth().onAuthStateChanged((user: firebase.User) => {
+	app.auth().onAuthStateChanged(async (user: firebase.User) => {
+		if (user) {
+			console.log('auth changed', user.email, user.displayName);
+		} else {
+			console.log('user cleared');
+		}
 		api.setUser(user);
 	});
 }
@@ -25,31 +26,6 @@ export async function init(api: CFanApi, app: firebase.app.App) {
 /** checks if the user is already logged in */
 export function isUserLoggedIn(this: CFanApi) {
 	return !!this.user;
-}
-
-/** attempts to sign in using Google auth */
-export async function logInUsingGoogle(this: CFanApi) {
-	const provider = new firebase.auth.GoogleAuthProvider();
-	this.app.auth().signInWithPopup(provider);
-}
-
-/** attempts to sign in using email/password */
-export async function logInUsingEmail(
-	this: CFanApi,
-	email: string,
-	password: string
-): Promise<LoginResult> {
-	try {
-		await this.app.auth().signInWithEmailAndPassword(email, password);
-
-		// replace the user
-		// this.setUser(result.user);
-
-		return { success: true };
-	} catch (ex) {
-		console.log(`login failed: ${ex.toString()}`);
-		return { success: false };
-	}
 }
 
 /** listen for log in/log out events */
@@ -72,7 +48,10 @@ export function getUser(this: CFanApi): User {
 		return null;
 	}
 
+	console.log(firebase.auth().currentUser);
+
 	// give back profile info
+	console.log(user);
 	return {
 		id: user.uid,
 		name: user.displayName,
@@ -87,6 +66,13 @@ export function clearUser(this: CFanApi) {
 
 /** sets user information */
 export function setUser(this: CFanApi, user: firebase.User | null): void {
+	if (user) {
+		console.log('user set', user);
+		console.log(user.displayName);
+		console.log(user.photoURL);
+	} else {
+		console.log('user removed');
+	}
 	this.user = user;
 	notifyUserStateChange();
 }

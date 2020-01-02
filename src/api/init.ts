@@ -1,6 +1,7 @@
 import { CFanApi } from '.';
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 import { init as initLogin } from './user';
+import { init as initTimestamp } from './timestamp';
 
 type Fail = {
 	success: false;
@@ -31,6 +32,7 @@ export async function init(this: CFanApi): Promise<InitResult> {
 
 	// prepare the login
 	initLogin(this, this.app);
+	initTimestamp(this, this.app);
 
 	return { success: true };
 }

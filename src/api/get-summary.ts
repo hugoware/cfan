@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { CFanApi } from '.';
 
 export interface FandomSummary {
+	id: string;
 	alias: string;
 	name: string;
 	heroImageUrl: string;
@@ -44,7 +45,7 @@ export async function getSummary(this: CFanApi): Promise<GetSummaryResult> {
 		// map the results
 		const records = _.map(result.docs, doc => {
 			const data = doc.data();
-			return Object.assign({}, data) as FandomSummary;
+			return Object.assign({ id: doc.id }, data) as FandomSummary;
 		});
 
 		return {
