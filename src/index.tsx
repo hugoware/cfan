@@ -35,8 +35,6 @@ class App extends React.Component<{}, State> {
 	}
 
 	render() {
-		const { busy } = this.state;
-
 		return (
 			<div className="App">
 				<Frame>
