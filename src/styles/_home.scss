@@ -5,8 +5,74 @@
 	
 	.fandom-list {
 
+		.overlay{
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			opacity: .60;
+		}
 		
+		.placementoverlaybar{
+			height: 100%;
+			background-color: black;
+			position: absolute;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			opacity: .75;
+		}
 
+		.fandom{
+			position: relative;
+			color: red;
+			height:100px;
+			background-size: cover;
+		  background-position: center;
+			margin: 5px;
+
+
+			.info{
+				position: relative;
+				z-index: 5;
+			  height: 100%;
+			}
+			.time{
+				position: absolute;
+				bottom: 20px;
+				right: 20px;
+				font-size: 15;
+			}
+			.place{
+				position: absolute;
+				top: 20px;
+				right: 20px;
+				font-size: 20px;
+			}
+			.name{
+				padding-top: 20px;
+				padding-left: 20px;
+			}
+			.description{
+				position: absolute;
+				left: 20px;
+				font-size: 12px;
+			}
+			.energy{
+				position: absolute;
+				left: 20px;
+				bottom: 20px;
+			}
+			&.light{
+				color: white;
+				text-shadow: 1px 1px black;
+			}
+			&.dark{
+				color: black;
+				text-shadow: 1px 1px white;
+			}
+		}
 	}
 
 }
