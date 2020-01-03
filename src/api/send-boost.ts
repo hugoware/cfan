@@ -33,7 +33,6 @@ export async function sendBoost(
 	if (fan.exists) {
 		// make sure they haven't updated recently
 		const lastBoostTime = 0 | (fan.data.ts || 0);
-		console.log('compare', lastBoostTime, ts);
 		if (lastBoostTime > ts) {
 			return { success: false, error: 'too_soon' };
 		}
@@ -47,6 +46,12 @@ export async function sendBoost(
 		console.log('create fan');
 		await fan.doc.set({ score: boost, ts, name: user.name });
 	}
+
+	// set the personal boost record so it's quicker
+	// to create the summary
+	const boosts = await this.getSource('boosts', user.id);
+	const action = boosts.exists ? 'update' : 'set';
+	await boosts.doc[action]({ [fandomId]: ts });
 
 	// next, boost the score for the fandom
 	// boost the score, but make sure to prevent

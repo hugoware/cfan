@@ -21,7 +21,11 @@ export class Fandom extends React.Component<Props, State> {
 		};
 
 		return (
-			<div style={backgroundStyle} className={fandomCx}>
+			<div
+				style={backgroundStyle}
+				className={fandomCx}
+				onClick={() => nav.goToFandom(fandom.id)}
+			>
 				<div className="placementoverlaybar" />
 				<div className="overlay" style={backgroundColor} />
 				<div className="info">

@@ -10,8 +10,11 @@ export async function logInUsingGoogle(this: CFanApi) {
 	const provider = new firebase.auth.GoogleAuthProvider();
 	provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
 
-	// this.app.auth().signInWithPopup(provider);
-	this.app.auth().signInWithRedirect(provider);
+	const result = await this.app.auth().signInWithPopup(provider);
+	if (result.user) {
+		this.setUser(result.user);
+	}
+	// this.app.auth().signInWithRedirect(provider);
 }
 
 /** attempts to sign out */
