@@ -2,6 +2,7 @@ import * as React from 'react';
 import cx from 'classnames';
 import nav from '../../navigation';
 import { FandomSummary } from '../../api';
+import { Countdown } from '../../components/countdown';
 
 interface Props {
 	fandom: FandomSummary;
@@ -20,19 +21,27 @@ export class Fandom extends React.Component<Props, State> {
 			backgroundColor: fandom.color
 		};
 
+		const percentage = {
+			width: `${fandom.globalPercentage}%`
+		};
+
+		const countdown = (
+			<Countdown timeRemaining={fandom.timeBeforeNextBoost}>Boost!</Countdown>
+		);
+
 		return (
 			<div
 				style={backgroundStyle}
 				className={fandomCx}
 				onClick={() => nav.goToFandom(fandom.id)}
 			>
-				<div className="placementoverlaybar" />
+				<div className="placementoverlaybar" style={percentage} />
 				<div className="overlay" style={backgroundColor} />
 				<div className="info">
 					<div className="name">{fandom.name}</div>
-					<div className="description">{fandom.alias}</div>
-					<div className="time">11:00</div>
-					<div className="place">1st</div>
+					<div className="description">{fandom.globalPercentage}</div>
+					{fandom.isFan && <div className="time">{countdown}</div>}
+					<div className="place">{fandom.globalPosition}</div>
 					<div className="energy">{fandom.score}</div>
 				</div>
 			</div>

@@ -1,0 +1,43 @@
+
+
+.search {
+
+  .field {
+    border: 1px solid white;
+    border-radius: 100px;
+    padding: 5px;
+
+    display: flex;
+
+    svg {
+      g, path {
+        fill: white;
+      }
+    }
+
+    input {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      flex: 1;
+      outline: none;
+    }
+  }
+
+  .results {
+
+    .item {
+      display: flex;
+    }
+
+    .icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 100px;
+      background-size: cover;
+    }
+    
+  }
+
+}

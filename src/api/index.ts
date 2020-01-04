@@ -15,7 +15,7 @@ import {
 } from './user';
 
 export { User } from './user';
-export { FandomSummary } from './get-summary';
+export { GetSummaryResult, FandomSummary } from './get-summary';
 
 interface DataSource {
 	exists: boolean;

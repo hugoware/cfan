@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import cx from 'classnames';
 import api from '../../api';
+import { Icon } from '../../icon';
 import { SearchResultItem } from '../../api/search';
 
 interface Props {
@@ -26,12 +27,12 @@ export class Search extends React.Component<Props, State> {
 	};
 
 	// handles when selecting a search result
-	onSelectResult = (alias: string): void => {
+	onSelectResult = (id: string): void => {
 		// // hide the search results
 		// this.clearSearch();
 
 		// share the selected result
-		this.props.onSelect(alias);
+		this.props.onSelect(id);
 	};
 
 	// resets the entire form and clears the view
@@ -65,7 +66,9 @@ export class Search extends React.Component<Props, State> {
 		try {
 			// perform the search
 			const result = await api.search(search);
-			this.setState({ results: result.matches });
+			if (result.success) {
+				this.setState({ results: result.matches });
+			}
 		} catch (ex) {
 			// if this failed, then need to show an error
 			alert(`search failed: ${ex.toString()}`);
@@ -81,8 +84,17 @@ export class Search extends React.Component<Props, State> {
 
 		// convert each item in a selectable option
 		const items = _.map(results, item => (
-			<div key={item.alias} onClick={() => this.onSelectResult(item.alias)}>
-				{item.name}
+			<div
+				className="item"
+				key={item.alias}
+				onClick={() => this.onSelectResult(item.id)}
+			>
+				<div
+					className="icon"
+					style={{ backgroundImage: `url(${item.profileImageUrl})` }}
+				/>
+				<div className="title">{item.name}</div>
+				<div className="desc">{item.description}</div>
 			</div>
 		));
 
@@ -134,8 +146,10 @@ export class Search extends React.Component<Props, State> {
 		// return the view
 		return (
 			<div className={searchCx}>
-				<div className="busy" />
-				<input onChange={this.onSearchChange} />
+				<div className="field">
+					<Icon icon="search" />
+					<input onChange={this.onSearchChange} />
+				</div>
 				{subview()}
 			</div>
 		);

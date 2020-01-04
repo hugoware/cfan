@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { CFanApi } from '.';
+import { getPlace } from '../utils/numbering';
 
 export interface FandomSummary {
 	id: string;
@@ -11,6 +12,7 @@ export interface FandomSummary {
 	score: number;
 	style: string;
 	globalPercentage: number;
+	globalPosition: number;
 	timeBeforeNextBoost: number;
 	isFan: boolean;
 }
@@ -18,14 +20,11 @@ export interface FandomSummary {
 type UserBoosts = { [id: string]: number };
 
 interface FandomRecord {
+	id: string;
 	data: any;
 	doc: firebase.firestore.QueryDocumentSnapshot<
 		firebase.firestore.DocumentData
 	>;
-}
-
-export interface MemberFandomSummary extends FandomSummary {
-	timeRemaining: number;
 }
 
 type Fail = {
@@ -38,7 +37,7 @@ type Success = {
 	member: FandomSummary[];
 };
 
-type GetSummaryResult = Fail | Success;
+export type GetSummaryResult = Fail | Success;
 
 export async function getSummary(this: CFanApi): Promise<GetSummaryResult> {
 	try {
@@ -57,20 +56,32 @@ export async function getSummary(this: CFanApi): Promise<GetSummaryResult> {
 		// get the personal boosts made by this user
 		const user = this.getUser();
 		const userBoosts = await this.getSource('boosts', user.id);
-		const boosts = userBoosts.data as UserBoosts;
+		const boosts = (userBoosts.data || {}) as UserBoosts;
 
 		// map the results
-		const records = _.map(result.docs, doc => ({ doc, data: doc.data() }));
+		const records = _.map(result.docs, doc => ({
+			id: doc.id,
+			doc,
+			data: doc.data()
+		}));
 		const top = _.first(records);
+		const leads = records.slice(0, 3);
 
 		// gather the top three records
 		const leaders = _.times(3, i =>
-			createSummary(records[i], top, now, boosts)
+			createSummary(records[i], top, i, now, boosts)
 		);
+
+		let place = 0;
 		const member = _(records)
-			.filter(record => true) // console.log(record))
-			.compact()
-			.map(record => createSummary(record, top, now, boosts))
+			.map(record => ({ place: ++place, record }))
+			.filter(item => {
+				const { id } = item.record;
+				const isMember = !isNaN(boosts[id]);
+				const isTop = _.find(leads, { id });
+				return isMember && !isTop;
+			})
+			.map(item => createSummary(item.record, top, item.place, now, boosts))
 			.value();
 
 		return {
@@ -80,6 +91,7 @@ export async function getSummary(this: CFanApi): Promise<GetSummaryResult> {
 		};
 	} catch (ex) {
 		// appeared to be an error
+		alert(`failed to get summary: ${ex.toString()}`);
 		return { success: false };
 	}
 }
@@ -87,6 +99,7 @@ export async function getSummary(this: CFanApi): Promise<GetSummaryResult> {
 function createSummary(
 	record: FandomRecord,
 	top: FandomRecord,
+	place: number,
 	ts: number,
 	boosts: UserBoosts
 ): FandomSummary {
@@ -98,7 +111,8 @@ function createSummary(
 	const boost = boosts[data.id];
 
 	// add additional information
-	data.globalPercentage = 100 * ((top.data.score as number) / data.score);
+	data.globalPercentage = 100 - 100 * (data.score / (top.data.score as number));
+	data.globalPosition = getPlace(place + 1);
 	data.isFan = !isNaN(boost);
 	data.timeBeforeNextBoost = Math.max(0, boost - ts);
 

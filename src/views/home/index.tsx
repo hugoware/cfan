@@ -1,15 +1,17 @@
 import _ from 'lodash';
 import * as React from 'react';
-import api from '../../api';
+import api, { GetSummaryResult } from '../../api';
 import nav from '../../navigation';
 import { Fandom } from './fandom';
 import { FandomSummary } from '../../api';
+import { Search } from '../../components/search';
+import { SearchResultItem } from '../../api/search';
 
 interface Props {}
 
 interface State {
 	busy?: boolean;
-	fandoms?: FandomSummary[];
+	summary?: GetSummaryResult;
 	error?: 'server_error';
 }
 
@@ -28,16 +30,31 @@ export class HomeView extends React.Component<Props, State> {
 		}
 
 		// set the fandoms to show
-		this.setState({ fandoms: summary.member });
+		this.setState({ summary });
 	};
+
+	// navigate the search menu
+	onSelectSearchResult = (id: string) => {
+		nav.goToFandom(id);
+	};
+
+	// codesandbox updates will not perform a
+	// componendDidMount on refreshes
+	async componentDidUpdate() {
+		if (!this.state.summary && !this.state.error) {
+			await this.updateSummary();
+		}
+	}
 
 	async componentDidMount() {
 		this.setState({ busy: true });
-		this.updateSummary();
+		await this.updateSummary();
 	}
 
 	// shows an error message
-	renderError() {}
+	renderError() {
+		return <div className="error">{this.state.error}</div>;
+	}
 
 	// displays a list of all relevant fandoms
 	renderFandoms(fandoms: FandomSummary[]) {
@@ -48,11 +65,24 @@ export class HomeView extends React.Component<Props, State> {
 	}
 
 	render() {
-		const { error, fandoms } = this.state;
+		const { error, summary } = this.state;
 		return (
 			<div className="home">
 				{error && this.renderError()}
-				{!error && fandoms && this.renderFandoms(fandoms)}
+
+				<Search onSelect={this.onSelectSearchResult} />
+
+				<h1>Top 3</h1>
+				{!error &&
+					summary &&
+					summary.success &&
+					this.renderFandoms(summary.leaders)}
+
+				<h2>Your Fandoms</h2>
+				{!error &&
+					summary &&
+					summary.success &&
+					this.renderFandoms(summary.member)}
 
 				<hr />
 				<hr />

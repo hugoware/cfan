@@ -1,7 +1,11 @@
 import _ from 'lodash';
 import { CFanApi } from '.';
+import naming from '../utils/naming';
 
 export interface SearchResultItem {
+	id: string;
+	description: string;
+	profileImageUrl: string;
 	name: string;
 	alias: string;
 }
@@ -23,10 +27,7 @@ export async function search(
 ): Promise<SearchResult> {
 	// convert the search to a lowercase array of strings
 	// for example, "BTS Group" would change to ["bts", "group"]
-	const phrases: string[] = _(search.split(/ /gi))
-		.compact()
-		.map(phrase => phrase.toLowerCase())
-		.value();
+	const phrases = naming.createKey(search);
 
 	try {
 		// perform the database query -- each record should
@@ -47,7 +48,10 @@ export async function search(
 		const matches: SearchResultItem[] = _.map(snapshot.docs, doc => {
 			const data = doc.data();
 			return {
+				id: doc.id,
+				profileImageUrl: data.profileImageUrl as string,
 				name: data.name as string,
+				description: data.description as string,
 				alias: data.alias as string
 			};
 		});
